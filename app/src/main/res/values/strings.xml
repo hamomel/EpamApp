@@ -3,4 +3,8 @@
   <string name="password_hint">Пароль</string>
   <string name="login_hint">Логин</string>
   <string name="enter_hint">Войти</string>
+  <string name="enter_success">Ура! Вы вошли!</string>
+  <string name="wrong_login_or_password">Не верный логин или пароль!</string>
+  <string name="something_went_wrong">Извините. Что-то пошло не так.</string>
+  <string name="too_short">Не менее %d символов!</string>
 </resources>
