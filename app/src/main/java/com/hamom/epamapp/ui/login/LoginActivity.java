@@ -1,4 +1,4 @@
-package com.hamom.epamapp.ui;
+package com.hamom.epamapp.ui.login;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
