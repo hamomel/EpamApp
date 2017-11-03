@@ -8,12 +8,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 import com.hamom.epamapp.R;
 import com.hamom.epamapp.data.network.NetworkDataProvider;
 import com.hamom.epamapp.data.network.requests.SignInReq;
 import com.hamom.epamapp.data.network.responces.SignInRes;
-import com.hamom.epamapp.databinding.FragmentLoginBinding;
 import com.hamom.epamapp.ui.main.MainActivity;
 import java.util.Random;
 import retrofit2.Call;
@@ -27,7 +28,9 @@ import retrofit2.Response;
 public class LoginFragment extends Fragment {
   public static final int PASSWORD_MIN_LENGTH = 6;
   public static final int LOGIN_MIN_LENGTH = 3;
-  private FragmentLoginBinding mBinding;
+  private EditText mLoginEt;
+  private EditText mPasswordEt;
+  private Button mLoginBtn;
 
   private NetworkDataProvider mNetworkDataProvider;
 
@@ -45,15 +48,18 @@ public class LoginFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    mBinding = FragmentLoginBinding.inflate(inflater, container, false);
-    mBinding.setFragment(this);
-    return mBinding.getRoot();
+    View view = inflater.inflate(R.layout.fragment_login, container, false);
+    mLoginEt = view.findViewById(R.id.login_et);
+    mPasswordEt = view.findViewById(R.id.password_et);
+    mLoginBtn = view.findViewById(R.id.login_btn);
+    mLoginBtn.setOnClickListener(v -> onLoginClick());
+    return view;
   }
 
-  public void onLoginClick() {
+  private void onLoginClick() {
     if (isValidLogin() && isValidPassword()) {
-      SignInReq req = new SignInReq(mBinding.loginET.getText().toString(),
-          mBinding.passwordET.getText().toString());
+      SignInReq req =
+          new SignInReq(mLoginEt.getText().toString(), mPasswordEt.getText().toString());
       if (isSuccessCall()) {
         mNetworkDataProvider.signIn(req, getSignInCallback());
       } else {
@@ -68,7 +74,7 @@ public class LoginFragment extends Fragment {
   }
 
   private Callback<SignInRes> getSignInCallback() {
-    return new  Callback<SignInRes>() {
+    return new Callback<SignInRes>() {
 
       @Override
       public void onResponse(Call<SignInRes> call, Response<SignInRes> response) {
@@ -94,8 +100,8 @@ public class LoginFragment extends Fragment {
   }
 
   private boolean isValidPassword() {
-    if (mBinding.passwordET.getText().length() < PASSWORD_MIN_LENGTH) {
-      mBinding.passwordET.setError(getString(R.string.too_short, PASSWORD_MIN_LENGTH));
+    if (mPasswordEt.getText().length() < PASSWORD_MIN_LENGTH) {
+      mPasswordEt.setError(getString(R.string.too_short, PASSWORD_MIN_LENGTH));
       return false;
     } else {
       return true;
@@ -103,8 +109,8 @@ public class LoginFragment extends Fragment {
   }
 
   private boolean isValidLogin() {
-    if (mBinding.loginET.getText().length() < LOGIN_MIN_LENGTH) {
-      mBinding.loginET.setError(getString(R.string.too_short, LOGIN_MIN_LENGTH));
+    if (mLoginEt.getText().length() < LOGIN_MIN_LENGTH) {
+      mLoginEt.setError(getString(R.string.too_short, LOGIN_MIN_LENGTH));
       return false;
     } else {
       return true;
