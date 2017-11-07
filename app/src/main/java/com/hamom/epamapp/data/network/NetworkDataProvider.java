@@ -44,8 +44,8 @@ public class NetworkDataProvider {
     call.enqueue(callback);
   }
 
-  public void signIn_401(SignInReq req, Callback<SignInRes> callback) {
-    Call<SignInRes> call = mRestService.signIn_401(req);
+  public void signIn401(SignInReq req, Callback<SignInRes> callback) {
+    Call<SignInRes> call = mRestService.signIn401(req);
     call.enqueue(callback);
   }
 }

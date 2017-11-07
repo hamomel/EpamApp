@@ -15,6 +15,6 @@ public interface RestService {
   @POST("signIn")
   Call<SignInRes> signIn(@Body SignInReq req);
 
-  @POST("signIn_401")
-  Call<SignInRes> signIn_401(@Body SignInReq req);
+  @POST("signIn401")
+  Call<SignInRes> signIn401(@Body SignInReq req);
 }
