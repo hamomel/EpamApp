@@ -61,7 +61,7 @@ public class NetworkService extends Service {
         if (isSuccessCall()) {
             mNetworkDataProvider.signIn(req, getSignInCallback());
         } else {
-            mNetworkDataProvider.signIn_401(req, getSignInCallback());
+            mNetworkDataProvider.signIn401(req, getSignInCallback());
         }
     }
 
