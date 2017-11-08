@@ -9,23 +9,27 @@ import android.support.annotation.Nullable;
 import com.hamom.epamapp.data.network.errors.SignInError;
 import com.hamom.epamapp.data.network.requests.SignInReq;
 import com.hamom.epamapp.data.network.responces.SignInRes;
+import com.hamom.epamapp.utils.AppConfig;
 
 import java.util.Random;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by hamom on 07.11.17.
  */
 
 public class NetworkService extends Service {
-    private NetworkDataProvider mNetworkDataProvider;
+    private RestService mRestService;
     private NetworkObservable<SignInRes> mSignInObservable;
 
     public class NetworkBinder extends Binder {
-
         public NetworkService getService() {
             return NetworkService.this;
         }
@@ -34,7 +38,18 @@ public class NetworkService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mNetworkDataProvider = NetworkDataProvider.get();
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .baseUrl(AppConfig.BASE_URL)
+                .build();
+
+        mRestService = retrofit.create(RestService.class);
     }
 
     @Nullable
@@ -59,9 +74,9 @@ public class NetworkService extends Service {
 
     private void signIn(SignInReq req) {
         if (isSuccessCall()) {
-            mNetworkDataProvider.signIn(req, getSignInCallback());
+            signIn(req, getSignInCallback());
         } else {
-            mNetworkDataProvider.signIn401(req, getSignInCallback());
+            signIn401(req, getSignInCallback());
         }
     }
 
@@ -78,7 +93,7 @@ public class NetworkService extends Service {
                 if (response.isSuccessful()) {
                     mSignInObservable.setResponse(response);
                 } else {
-                    mSignInObservable.setError(new SignInError(String.valueOf(response.code())));
+                    mSignInObservable.setError(new SignInError(response.code()));
                 }
             }
 
@@ -89,4 +104,14 @@ public class NetworkService extends Service {
         };
     }
 
+
+    public void signIn(SignInReq req, Callback<SignInRes> callback) {
+        Call<SignInRes> call = mRestService.signIn(req);
+        call.enqueue(callback);
+    }
+
+    public void signIn401(SignInReq req, Callback<SignInRes> callback) {
+        Call<SignInRes> call = mRestService.signIn401(req);
+        call.enqueue(callback);
+    }
 }

@@ -5,7 +5,14 @@ package com.hamom.epamapp.data.network.errors;
  */
 
 public class SignInError extends Throwable {
-    public SignInError(String message) {
-        super(message);
+    private final int mErrorCode;
+
+    public SignInError(int errorCode) {
+        super();
+        this.mErrorCode = errorCode;
+    }
+
+    public int getErrorCode() {
+        return mErrorCode;
     }
 }

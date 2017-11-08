@@ -92,7 +92,13 @@ public class LoginActivity extends AppCompatActivity {
             public void onError(Throwable error) {
                 String message;
                 if (error instanceof SignInError) {
-                    message = getString(R.string.wrong_login_or_password);
+                    switch (((SignInError) error).getErrorCode()) {
+                        case 401:
+                            message = getString(R.string.wrong_login_or_password);
+                            break;
+                        default:
+                            message = getString(R.string.something_went_wrong);
+                    }
                 } else {
                     message = getString(R.string.something_went_wrong);
                 }
