@@ -9,23 +9,25 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.view.View;
 import android.widget.Toast;
 
 import com.hamom.epamapp.R;
-import com.hamom.epamapp.data.network.NetworkObservable;
-import com.hamom.epamapp.data.network.NetworkObserver;
 import com.hamom.epamapp.data.network.NetworkService;
-import com.hamom.epamapp.data.network.errors.SignInError;
 import com.hamom.epamapp.data.network.requests.SignInReq;
 import com.hamom.epamapp.data.network.responces.SignInRes;
 import com.hamom.epamapp.ui.main.MainActivity;
+import com.hamom.epamapp.utils.ConstantManager;
 
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
+    private static String TAG = ConstantManager.TAG_PREFIX + "LoginActivity: ";
     private boolean mBound;
     private NetworkService mNetworkService;
-    private NetworkObservable<SignInRes> mSignInObservable;
     private ServiceConnection mServiceConnection = getServiceConnection();
 
     @Override
@@ -54,11 +56,6 @@ public class LoginActivity extends AppCompatActivity {
             unbindService(mServiceConnection);
             mBound = false;
         }
-
-        if (mSignInObservable != null) {
-            mSignInObservable.unSubscribe();
-        }
-
         super.onStop();
     }
 
@@ -69,7 +66,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 mBound = true;
                 mNetworkService = ((NetworkService.NetworkBinder) iBinder).getService();
-                subscribeOnSignInObs();
             }
 
             @Override
@@ -79,42 +75,47 @@ public class LoginActivity extends AppCompatActivity {
         };
     }
 
+    public void signIn(SignInReq req) {
+        mNetworkService.signIn(req)
+                .enqueue(new Callback<SignInRes>() {
+                    @Override
+                    public void onResponse(Call<SignInRes> call, Response<SignInRes> response) {
+                        switch (response.code()) {
+                            case 200:
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                                break;
+                            case 401:
+                                showError(getString(R.string.wrong_login_or_password));
+                                break;
+                            default:
+                                showError(getString(R.string.something_went_wrong));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SignInRes> call, Throwable t) {
+                        showError(getString(R.string.something_went_wrong));
+                    }
+                });
+    }
+
     private void showError(String message) {
+        float density = getDensity();
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
-        toast.getView().setBackgroundColor(Color.RED);
+        View view = toast.getView();
+        view.setBackgroundColor(Color.RED);
+        int horizontalPadding = (int) (16 * density);
+        int verticalPadding = view.getPaddingBottom();
+        view.setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding);
         toast.show();
     }
 
-    public void signIn(SignInReq req) {
-        mNetworkService.signIn(req);
+    private float getDensity() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        return metrics.density;
     }
 
-    private void subscribeOnSignInObs() {
-        mSignInObservable = mNetworkService.getSignInObservable();
-        mSignInObservable.subscribe(new NetworkObserver<SignInRes>() {
-            @Override
-            public void onResponse(Response<SignInRes> response) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-//                finish();
-            }
-
-            @Override
-            public void onError(Throwable error) {
-                String message;
-                if (error instanceof SignInError) {
-                    switch (((SignInError) error).getErrorCode()) {
-                        case 401:
-                            message = getString(R.string.wrong_login_or_password);
-                            break;
-                        default:
-                            message = getString(R.string.something_went_wrong);
-                    }
-                } else {
-                    message = getString(R.string.something_went_wrong);
-                }
-                showError(message);
-            }
-        });
-    }
 }

@@ -10,7 +10,7 @@ import retrofit2.http.POST;
  * Created by hamom on 02.11.17.
  */
 
-public interface RestService {
+public interface UserService {
 
   @POST("signIn")
   Call<SignInRes> signIn(@Body SignInReq req);
