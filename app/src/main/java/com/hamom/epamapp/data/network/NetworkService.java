@@ -63,16 +63,15 @@ public class NetworkService extends Service {
         return START_NOT_STICKY;
     }
 
-    public NetworkObservable<SignInRes> getSignInObservable(SignInReq req) {
+    //region===================== SignIn ==========================
+    public NetworkObservable<SignInRes> getSignInObservable() {
         if (mSignInObservable == null) {
             mSignInObservable = new NetworkObservable<>();
         }
-
-        signIn(req);
         return mSignInObservable;
     }
 
-    private void signIn(SignInReq req) {
+    public void signIn(SignInReq req) {
         if (isSuccessCall()) {
             signIn(req, getSignInCallback());
         } else {
@@ -105,13 +104,15 @@ public class NetworkService extends Service {
     }
 
 
-    public void signIn(SignInReq req, Callback<SignInRes> callback) {
+    private void signIn(SignInReq req, Callback<SignInRes> callback) {
         Call<SignInRes> call = mRestService.signIn(req);
         call.enqueue(callback);
     }
 
-    public void signIn401(SignInReq req, Callback<SignInRes> callback) {
+    private void signIn401(SignInReq req, Callback<SignInRes> callback) {
         Call<SignInRes> call = mRestService.signIn401(req);
         call.enqueue(callback);
     }
+    //endregion
+
 }

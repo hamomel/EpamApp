@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
@@ -25,18 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     private boolean mBound;
     private NetworkService mNetworkService;
     private NetworkObservable<SignInRes> mSignInObservable;
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            mBound = true;
-            mNetworkService = ((NetworkService.NetworkBinder) iBinder).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mBound = false;
-        }
-    };
+    private ServiceConnection mServiceConnection = getServiceConnection();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +62,23 @@ public class LoginActivity extends AppCompatActivity {
         super.onStop();
     }
 
+    @NonNull
+    private ServiceConnection getServiceConnection() {
+        return new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                mBound = true;
+                mNetworkService = ((NetworkService.NetworkBinder) iBinder).getService();
+                subscribeOnSignInObs();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                mBound = false;
+            }
+        };
+    }
+
     private void showError(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
         toast.getView().setBackgroundColor(Color.RED);
@@ -79,13 +86,17 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signIn(SignInReq req) {
-        mSignInObservable = mNetworkService.getSignInObservable(req);
+        mNetworkService.signIn(req);
+    }
+
+    private void subscribeOnSignInObs() {
+        mSignInObservable = mNetworkService.getSignInObservable();
         mSignInObservable.subscribe(new NetworkObserver<SignInRes>() {
             @Override
             public void onResponse(Response<SignInRes> response) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
-                finish();
+//                finish();
             }
 
             @Override
