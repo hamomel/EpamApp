@@ -1,40 +1,50 @@
 package com.hamom.epamapp.ui.main;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.support.v4.app.Fragment;
 
-import com.hamom.epamapp.BuildConfig;
 import com.hamom.epamapp.R;
-import com.hamom.epamapp.utils.ConstantManager;
+import com.hamom.epamapp.data.network.responces.TodoRes;
+import com.hamom.epamapp.ui.base.NetworkActivity;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by hamom on 03.11.17.
  */
 
-public class MainActivity extends AppCompatActivity {
-    private static String TAG = ConstantManager.TAG_PREFIX + "MainActivity: ";
+public class MainActivity extends NetworkActivity {
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected Fragment getFragment() {
+        return TodoListFragment.newInstance();
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        if (BuildConfig.DEBUG) Log.d(TAG, "onStart: ");
+    protected void onNetworkServiceConnected() {
+        mNetworkService.getAllTodos()
+                .enqueue(new Callback<List<TodoRes>>() {
+                    @Override
+                    public void onResponse(Call<List<TodoRes>> call, Response<List<TodoRes>> response) {
+                        if (response.isSuccessful()) {
+                            showData(response.body());
+                        } else {
+                            showError(getString(R.string.something_went_wrong));
+                        }
+                    }
 
-
+                    @Override
+                    public void onFailure(Call<List<TodoRes>> call, Throwable t) {
+                        showError(getString(R.string.something_went_wrong));
+                    }
+                });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy: isFinishing " + isFinishing());
-
-
+    private void showData(List<TodoRes> todos) {
+        TodoListFragment fragment = ((TodoListFragment) getSupportFragmentManager().findFragmentById(R.id.main_frame));
+        fragment.setData(todos);
     }
 }

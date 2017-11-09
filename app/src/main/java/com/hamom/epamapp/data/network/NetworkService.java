@@ -8,7 +8,11 @@ import android.support.annotation.Nullable;
 
 import com.hamom.epamapp.data.network.requests.SignInReq;
 import com.hamom.epamapp.data.network.responces.SignInRes;
+import com.hamom.epamapp.data.network.responces.TodoRes;
+import com.hamom.epamapp.data.network.services.TodoService;
+import com.hamom.epamapp.data.network.services.UserService;
 
+import java.util.List;
 import java.util.Random;
 
 import retrofit2.Call;
@@ -19,6 +23,7 @@ import retrofit2.Call;
 
 public class NetworkService extends Service {
     private UserService mUserService;
+    private TodoService mTodoService;
 
     public class NetworkBinder extends Binder {
         public NetworkService getService() {
@@ -30,6 +35,7 @@ public class NetworkService extends Service {
     public void onCreate() {
         super.onCreate();
         mUserService = RestClient.getUserService();
+        mTodoService = RestClient.getTodoService();
     }
 
     @Nullable
@@ -65,5 +71,9 @@ public class NetworkService extends Service {
         return mUserService.signIn401(req);
     }
     //endregion
+
+    public Call<List<TodoRes>> getAllTodos() {
+        return mTodoService.getAllTodos();
+    }
 
 }

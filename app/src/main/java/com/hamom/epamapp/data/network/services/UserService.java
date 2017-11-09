@@ -1,4 +1,4 @@
-package com.hamom.epamapp.data.network;
+package com.hamom.epamapp.data.network.services;
 
 import com.hamom.epamapp.data.network.requests.SignInReq;
 import com.hamom.epamapp.data.network.responces.SignInRes;
