@@ -10,14 +10,12 @@ public class SignInReq {
 
   @SerializedName("login")
   private String login;
-  @SerializedName("user_name")
-  private String userName;
+
   @SerializedName("password")
   private String password;
 
-  public SignInReq(String login, String userName, String password) {
+  public SignInReq(String login, String password) {
     this.login = login;
-    this.userName = userName;
     this.password = password;
   }
 }

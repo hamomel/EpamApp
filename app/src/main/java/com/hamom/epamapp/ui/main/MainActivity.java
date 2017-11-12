@@ -1,6 +1,9 @@
 package com.hamom.epamapp.ui.main;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
 import com.hamom.epamapp.R;
 import com.hamom.epamapp.data.models.Todo;
@@ -17,7 +20,7 @@ import retrofit2.Response;
  */
 
 public class MainActivity extends NetworkActivity {
-
+    private static final String EXTRA_USER_ID = "extra_user_id";
     @Override
     protected Fragment getFragment() {
         return TodoListFragment.newInstance();
@@ -46,5 +49,11 @@ public class MainActivity extends NetworkActivity {
     private void showData(List<Todo> todos) {
         TodoListFragment fragment = ((TodoListFragment) getSupportFragmentManager().findFragmentById(R.id.main_frame));
         fragment.setData(todos);
+    }
+
+    public static Intent getNewIntent(Context context, long id) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(EXTRA_USER_ID, id);
+        return intent;
     }
 }

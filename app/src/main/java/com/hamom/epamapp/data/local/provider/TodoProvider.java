@@ -42,6 +42,7 @@ public class TodoProvider extends ContentProvider {
         return true;
     }
 
+
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
@@ -75,7 +76,6 @@ public class TodoProvider extends ContentProvider {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         Cursor cursor = db.query(tableName, projection, selection, selectionArgs,
                 null, null, sortOrder);
-        db.close();
         return cursor;
     }
 

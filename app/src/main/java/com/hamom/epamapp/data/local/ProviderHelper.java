@@ -51,6 +51,7 @@ public class ProviderHelper {
             cursor.moveToFirst();
             long id = cursor.getLong(cursor.getColumnIndex(UserEntry._ID));
             String name1 = cursor.getString(cursor.getColumnIndex(UserEntry.COLUMN_NAME_NAME));
+            cursor.close();
             User user = new User(id, name1);
             callback.onExecuted(user);
         } else {

@@ -1,5 +1,7 @@
 package com.hamom.epamapp.ui.login;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,7 +11,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import com.hamom.epamapp.R;
+import com.hamom.epamapp.data.local.ProviderHelper;
+import com.hamom.epamapp.data.models.User;
 import com.hamom.epamapp.data.network.requests.SignInReq;
+import com.hamom.epamapp.ui.main.MainActivity;
 
 
 /**
@@ -21,9 +26,19 @@ public class LoginFragment extends Fragment {
     public static final int LOGIN_MIN_LENGTH = 3;
     private EditText mLoginEt;
     private EditText mPasswordEt;
+    private ProviderHelper mProviderHelper;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        if (savedInstanceState == null) {
+            mProviderHelper = new ProviderHelper(getActivity().getApplicationContext().getContentResolver());
+        }
     }
 
     @Nullable
@@ -41,10 +56,30 @@ public class LoginFragment extends Fragment {
 
     private void onLoginClick() {
         if (isValidLogin() && isValidPassword()) {
-            SignInReq req =
-                    new SignInReq(mLoginEt.getText().toString(), mPasswordEt.getText().toString());
-            ((LoginActivity) getActivity()).signIn(req);
+            mProviderHelper.getUserByName(mLoginEt.getText().toString(), result -> checkUser(((User) result)));
+//            SignInReq req =
+//                    new SignInReq(mLoginEt.getText().toString(), mPasswordEt.getText().toString());
+//            ((LoginActivity) getActivity()).signIn(req);
         }
+    }
+
+    private void checkUser(User user) {
+        long id;
+        if (user != null) {
+            id = user.getId();
+            startMainActivity(id);
+        } else {
+            mProviderHelper.saveUser(mLoginEt.getText().toString(), result -> {
+                String stringId = ((Uri) result).getLastPathSegment();
+                long userId = Long.parseLong(stringId);
+                startMainActivity(userId);
+            });
+        }
+    }
+
+    private void startMainActivity(long id) {
+       Intent intent = MainActivity.getNewIntent(getActivity(), id);
+       startActivity(intent);
     }
 
     private boolean isValidPassword() {
