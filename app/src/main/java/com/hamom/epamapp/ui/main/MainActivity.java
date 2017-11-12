@@ -1,8 +1,12 @@
 package com.hamom.epamapp.ui.main;
 
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.hamom.epamapp.R;
+import com.hamom.epamapp.data.local.db.TodoContract;
+import com.hamom.epamapp.data.local.provider.TodoProvider;
 import com.hamom.epamapp.data.network.responces.TodoRes;
 import com.hamom.epamapp.ui.base.NetworkActivity;
 
@@ -17,6 +21,13 @@ import retrofit2.Response;
  */
 
 public class MainActivity extends NetworkActivity {
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getContentResolver().insert(TodoContract.CONTENT_URI, null);
+    }
 
     @Override
     protected Fragment getFragment() {

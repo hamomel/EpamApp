@@ -17,13 +17,11 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_USER_SQL = "CREATE TABLE " +
             User.TABLE_NAME + " (" +
-            User._ID + " INTEGER PRIMARY KEY," +
             User.COLUMN_NAME_NAME + " TEXT" +
             " )";
 
     private static final String CREATE_TODO_SQL = "CREATE TABLE " +
             Todo.TABLE_NAME + " (" +
-            Todo._ID + " INTEGER PRIMARY KEY," +
             Todo.COLUMN_NAME_TITLE + " TEXT," +
             Todo.COLUMN_NAME_DESCRIPTION + " TEXT," +
             Todo.COLUMN_NAME_TIME + " INTEGER," +
