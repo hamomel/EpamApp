@@ -1,6 +1,6 @@
 package com.hamom.epamapp.data.network.services;
 
-import com.hamom.epamapp.data.network.responces.TodoRes;
+import com.hamom.epamapp.data.models.Todo;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ import retrofit2.http.GET;
 public interface TodoService {
 
     @GET("todo")
-    Call<List<TodoRes>> getAllTodos();
+    Call<List<Todo>> getAllTodos();
 }

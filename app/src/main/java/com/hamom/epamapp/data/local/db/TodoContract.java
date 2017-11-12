@@ -13,7 +13,7 @@ public final class TodoContract {
     private static final String MIME_TYPE_ITEM_PREFIX = "vnd.android.cursor.item/vnd.com.hamom.epamapp.";
     public static final Uri CONTENT_URI = Uri.parse(AUTHORITY);
 
-    public static class User implements BaseColumns{
+    public static class UserEntry implements BaseColumns{
         public static final String TABLE_NAME = "users";
         public static final String COLUMN_NAME_NAME = "name";
         public static final String MIME_TYPE_ITEM = TodoContract.MIME_TYPE_ITEM_PREFIX + TABLE_NAME;
@@ -21,7 +21,7 @@ public final class TodoContract {
         public static final Uri CONTENT_URI = Uri.parse(TodoContract.AUTHORITY + "/" + TABLE_NAME);
     }
 
-    public static class Todo implements BaseColumns{
+    public static class TodoEntry implements BaseColumns{
         public static final String TABLE_NAME = "toods";
         public static final String COLUMN_NAME_TITLE = "title";
         public static final String COLUMN_NAME_DESCRIPTION = "description";

@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import static com.hamom.epamapp.data.local.db.TodoContract.Todo;
-import static com.hamom.epamapp.data.local.db.TodoContract.User;
+import static com.hamom.epamapp.data.local.db.TodoContract.TodoEntry;
+import static com.hamom.epamapp.data.local.db.TodoContract.UserEntry;
 
 /**
  * Created by hamom on 12.11.17.
@@ -16,20 +16,20 @@ public class DbHelper extends SQLiteOpenHelper {
     private static int DB_VERSION = 1;
 
     private static final String CREATE_USER_SQL = "CREATE TABLE " +
-            User.TABLE_NAME + " (" +
-            User.COLUMN_NAME_NAME + " TEXT" +
+            UserEntry.TABLE_NAME + " (" +
+            UserEntry.COLUMN_NAME_NAME + " TEXT" +
             " )";
 
     private static final String CREATE_TODO_SQL = "CREATE TABLE " +
-            Todo.TABLE_NAME + " (" +
-            Todo.COLUMN_NAME_TITLE + " TEXT," +
-            Todo.COLUMN_NAME_DESCRIPTION + " TEXT," +
-            Todo.COLUMN_NAME_TIME + " INTEGER," +
-            Todo.COLUMN_NAME_PRIORITY + " INTEGER," +
-            Todo.COLUMN_NAME_USER_ID + " INTEGER," +
-            " FOREIGN KEY (" + Todo.COLUMN_NAME_USER_ID + ")" +
-            " REFERENCES " + User.TABLE_NAME + "(" +
-            User._ID + ") ON DELETE CASCADE" +
+            TodoEntry.TABLE_NAME + " (" +
+            TodoEntry.COLUMN_NAME_TITLE + " TEXT," +
+            TodoEntry.COLUMN_NAME_DESCRIPTION + " TEXT," +
+            TodoEntry.COLUMN_NAME_TIME + " INTEGER," +
+            TodoEntry.COLUMN_NAME_PRIORITY + " INTEGER," +
+            TodoEntry.COLUMN_NAME_USER_ID + " INTEGER," +
+            " FOREIGN KEY (" + TodoEntry.COLUMN_NAME_USER_ID + ")" +
+            " REFERENCES " + UserEntry.TABLE_NAME + "(" +
+            UserEntry._ID + ") ON DELETE CASCADE" +
             " )";
 
     public DbHelper(Context context) {

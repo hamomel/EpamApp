@@ -1,11 +1,11 @@
-package com.hamom.epamapp.data.network.responces;
+package com.hamom.epamapp.data.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class TodoRes {
+public class Todo {
 
     @SerializedName("id")
-    private String id;
+    private long id;
 
     @SerializedName("description")
     private String description;
@@ -19,7 +19,15 @@ public class TodoRes {
     @SerializedName("priority")
     private int priority;
 
-    public String getId() {
+    public Todo(long id, String title, String description, long time, int priority) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.time = time;
+        this.priority = priority;
+    }
+
+    public long getId() {
         return id;
     }
 

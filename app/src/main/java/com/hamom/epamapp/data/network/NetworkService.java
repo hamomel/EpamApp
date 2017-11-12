@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 
 import com.hamom.epamapp.data.network.requests.SignInReq;
 import com.hamom.epamapp.data.network.responces.SignInRes;
-import com.hamom.epamapp.data.network.responces.TodoRes;
+import com.hamom.epamapp.data.models.Todo;
 import com.hamom.epamapp.data.network.services.TodoService;
 import com.hamom.epamapp.data.network.services.UserService;
 
@@ -72,7 +72,7 @@ public class NetworkService extends Service {
     }
     //endregion
 
-    public Call<List<TodoRes>> getAllTodos() {
+    public Call<List<Todo>> getAllTodos() {
         return mTodoService.getAllTodos();
     }
 

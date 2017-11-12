@@ -1,13 +1,9 @@
 package com.hamom.epamapp.ui.main;
 
-import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.hamom.epamapp.R;
-import com.hamom.epamapp.data.local.db.TodoContract;
-import com.hamom.epamapp.data.local.provider.TodoProvider;
-import com.hamom.epamapp.data.network.responces.TodoRes;
+import com.hamom.epamapp.data.models.Todo;
 import com.hamom.epamapp.ui.base.NetworkActivity;
 
 import java.util.List;
@@ -22,13 +18,6 @@ import retrofit2.Response;
 
 public class MainActivity extends NetworkActivity {
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getContentResolver().insert(TodoContract.CONTENT_URI, null);
-    }
-
     @Override
     protected Fragment getFragment() {
         return TodoListFragment.newInstance();
@@ -37,9 +26,9 @@ public class MainActivity extends NetworkActivity {
     @Override
     protected void onNetworkServiceConnected() {
         mNetworkService.getAllTodos()
-                .enqueue(new Callback<List<TodoRes>>() {
+                .enqueue(new Callback<List<Todo>>() {
                     @Override
-                    public void onResponse(Call<List<TodoRes>> call, Response<List<TodoRes>> response) {
+                    public void onResponse(Call<List<Todo>> call, Response<List<Todo>> response) {
                         if (response.isSuccessful()) {
                             showData(response.body());
                         } else {
@@ -48,13 +37,13 @@ public class MainActivity extends NetworkActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<List<TodoRes>> call, Throwable t) {
+                    public void onFailure(Call<List<Todo>> call, Throwable t) {
                         showError(getString(R.string.something_went_wrong));
                     }
                 });
     }
 
-    private void showData(List<TodoRes> todos) {
+    private void showData(List<Todo> todos) {
         TodoListFragment fragment = ((TodoListFragment) getSupportFragmentManager().findFragmentById(R.id.main_frame));
         fragment.setData(todos);
     }

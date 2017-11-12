@@ -29,10 +29,10 @@ public class TodoProvider extends ContentProvider {
 
     static {
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.User.TABLE_NAME, USERS_URI);
-        mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.User.TABLE_NAME + "/#", USERS_ID_URI);
-        mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.Todo.TABLE_NAME, TODO_ID_URI);
-        mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.User.TABLE_NAME + "/#", TODO_ID_URI);
+        mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.UserEntry.TABLE_NAME, USERS_URI);
+        mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.UserEntry.TABLE_NAME + "/#", USERS_ID_URI);
+        mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.TodoEntry.TABLE_NAME, TODO_ID_URI);
+        mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.UserEntry.TABLE_NAME + "/#", TODO_ID_URI);
 
     }
 
@@ -49,24 +49,24 @@ public class TodoProvider extends ContentProvider {
         String tableName;
         switch (mUriMatcher.match(uri)) {
             case USERS_URI:
-                tableName = TodoContract.User.TABLE_NAME;
+                tableName = TodoContract.UserEntry.TABLE_NAME;
                     if (TextUtils.isEmpty(sortOrder)){
-                        sortOrder = TodoContract.User.COLUMN_NAME_NAME + " ASC";
+                        sortOrder = TodoContract.UserEntry.COLUMN_NAME_NAME + " ASC";
                     }
                 break;
             case USERS_ID_URI:
-                tableName = TodoContract.User.TABLE_NAME;
-                selection = TodoContract.User._ID + " = " + uri.getLastPathSegment();
+                tableName = TodoContract.UserEntry.TABLE_NAME;
+                selection = TodoContract.UserEntry._ID + " = " + uri.getLastPathSegment();
                  break;
             case TODO_URI:
-                tableName = TodoContract.Todo.TABLE_NAME;
+                tableName = TodoContract.TodoEntry.TABLE_NAME;
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = TodoContract.Todo.COLUMN_NAME_TIME + " ASC";
+                    sortOrder = TodoContract.TodoEntry.COLUMN_NAME_TIME + " ASC";
                 }
                 break;
             case TODO_ID_URI:
-                tableName = TodoContract.Todo.TABLE_NAME;
-                selection = TodoContract.Todo._ID + " = " + uri.getLastPathSegment();
+                tableName = TodoContract.TodoEntry.TABLE_NAME;
+                selection = TodoContract.TodoEntry._ID + " = " + uri.getLastPathSegment();
                 break;
             default:
                 throw new IllegalArgumentException("Uri " + uri.getPath() + " doesn't match any known path");
@@ -84,13 +84,13 @@ public class TodoProvider extends ContentProvider {
     public String getType(@NonNull Uri uri) {
         switch (mUriMatcher.match(uri)) {
             case USERS_URI:
-                return TodoContract.User.MIME_TYPE_TABLE;
+                return TodoContract.UserEntry.MIME_TYPE_TABLE;
             case USERS_ID_URI:
-                return TodoContract.User.MIME_TYPE_ITEM;
+                return TodoContract.UserEntry.MIME_TYPE_ITEM;
             case TODO_URI:
-                return TodoContract.Todo.MIME_TYPE_TABLE;
+                return TodoContract.TodoEntry.MIME_TYPE_TABLE;
             case TODO_ID_URI:
-                return TodoContract.Todo.MIME_TYPE_ITEM;
+                return TodoContract.TodoEntry.MIME_TYPE_ITEM;
             default:
                 throw new IllegalArgumentException("Uri " + uri.getPath() + " doesn't match any known path");
         }
@@ -131,9 +131,9 @@ public class TodoProvider extends ContentProvider {
     private String resolveTableName(@NonNull Uri uri) {
         switch (mUriMatcher.match(uri)) {
             case USERS_URI:
-                return TodoContract.User.TABLE_NAME;
+                return TodoContract.UserEntry.TABLE_NAME;
             case TODO_URI:
-                return TodoContract.Todo.TABLE_NAME;
+                return TodoContract.TodoEntry.TABLE_NAME;
             default:
                 throw new IllegalArgumentException("Uri '" + uri.getPath() + "' doesn't match any known path");
         }

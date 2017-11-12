@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.hamom.epamapp.R;
-import com.hamom.epamapp.data.network.responces.TodoRes;
+import com.hamom.epamapp.data.models.Todo;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,9 +20,9 @@ import java.util.List;
 
 public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder> {
 
-    private List<TodoRes> mTodos = new ArrayList<>();
+    private List<Todo> mTodos = new ArrayList<>();
 
-    void setTodos(List<TodoRes> todos) {
+    void setTodos(List<Todo> todos) {
         mTodos = todos;
         notifyDataSetChanged();
     }
@@ -35,7 +35,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
 
     @Override
     public void onBindViewHolder(TodoViewHolder holder, int position) {
-        TodoRes todo = mTodos.get(position);
+        Todo todo = mTodos.get(position);
         holder.bind(todo);
     }
 
@@ -57,7 +57,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
             mDescTextView = itemView.findViewById(R.id.description_tv);
         }
 
-        void bind(TodoRes todo) {
+        void bind(Todo todo) {
             String time = getTimeString(todo.getTime());
             mTimeTextView.setText(time);
             mTitleTextView.setText(todo.getTitle());

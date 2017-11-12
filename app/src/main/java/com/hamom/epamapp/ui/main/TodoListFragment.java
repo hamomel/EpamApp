@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.hamom.epamapp.R;
-import com.hamom.epamapp.data.network.responces.TodoRes;
+import com.hamom.epamapp.data.models.Todo;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class TodoListFragment extends Fragment {
         mTodoRecycler.setAdapter(mAdapter);
     }
 
-    public void setData(List<TodoRes> todos) {
+    public void setData(List<Todo> todos) {
         mAdapter.setTodos(todos);
     }
 }
