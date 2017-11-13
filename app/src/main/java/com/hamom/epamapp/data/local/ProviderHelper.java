@@ -4,12 +4,15 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
+import com.hamom.epamapp.BuildConfig;
 import com.hamom.epamapp.data.local.db.TodoContract.*;
 import com.hamom.epamapp.data.local.tasks.InsertTask;
 import com.hamom.epamapp.data.local.tasks.QueryTask;
 import com.hamom.epamapp.data.models.Todo;
 import com.hamom.epamapp.data.models.User;
+import com.hamom.epamapp.utils.ConstantManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.List;
  */
 
 public class ProviderHelper {
+    private static String TAG = ConstantManager.TAG_PREFIX + "ProviderHelper: ";
     private ContentResolver mContentResolver;
 
     public ProviderHelper(ContentResolver contentResolver) {
@@ -53,6 +57,9 @@ public class ProviderHelper {
             String name1 = cursor.getString(cursor.getColumnIndex(UserEntry.COLUMN_NAME_NAME));
             cursor.close();
             User user = new User(id, name1);
+            if (BuildConfig.DEBUG) Log.d(TAG, "fetchUserFromCursor: " + user.getId() + " " + user.getName());
+
+
             callback.onExecuted(user);
         } else {
             callback.onExecuted(null);
