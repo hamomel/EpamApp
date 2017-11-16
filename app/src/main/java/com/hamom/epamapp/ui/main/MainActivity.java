@@ -2,6 +2,7 @@ package com.hamom.epamapp.ui.main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
@@ -9,6 +10,7 @@ import com.hamom.epamapp.R;
 import com.hamom.epamapp.data.models.Todo;
 import com.hamom.epamapp.ui.base.NetworkActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -48,7 +50,9 @@ public class MainActivity extends NetworkActivity {
 
     private void showData(List<Todo> todos) {
         TodoListFragment fragment = ((TodoListFragment) getSupportFragmentManager().findFragmentById(R.id.main_frame));
-        fragment.setData(todos);
+        Bundle args = new Bundle();
+        args.putParcelableArrayList(TodoListFragment.ARG_TODOS, ((ArrayList<Todo>) todos));
+        fragment.setArguments(args);
     }
 
     public static Intent getNewIntent(Context context, long id) {

@@ -19,11 +19,22 @@ import java.util.List;
  */
 
 public class TodoListFragment extends Fragment {
+    public static final String ARG_TODOS = "arg_todos";
     private RecyclerView mTodoRecycler;
     private TodoAdapter mAdapter;
+    private List<Todo> mTodos;
 
     public static Fragment newInstance() {
         return new TodoListFragment();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            mTodos = args.getParcelableArrayList(ARG_TODOS);
+        }
     }
 
     @Nullable
@@ -39,9 +50,17 @@ public class TodoListFragment extends Fragment {
         mAdapter = new TodoAdapter();
         mTodoRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTodoRecycler.setAdapter(mAdapter);
+        if (mTodos != null) {
+            mAdapter.setTodos(mTodos);
+        }
     }
 
-    public void setData(List<Todo> todos) {
-        mAdapter.setTodos(todos);
+    @Override
+    public void setArguments(Bundle args) {
+        super.setArguments(args);
+        mTodos = args.getParcelableArrayList(ARG_TODOS);
+        if (mAdapter != null) {
+            mAdapter.setTodos(mTodos);
+        }
     }
 }
