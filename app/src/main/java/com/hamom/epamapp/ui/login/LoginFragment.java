@@ -1,8 +1,13 @@
 package com.hamom.epamapp.ui.login;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,8 +16,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import com.hamom.epamapp.R;
+import com.hamom.epamapp.data.local.DataBaseService;
 import com.hamom.epamapp.data.local.ProviderHelper;
 import com.hamom.epamapp.data.models.User;
+import com.hamom.epamapp.data.network.NetworkService;
 import com.hamom.epamapp.data.network.requests.SignInReq;
 import com.hamom.epamapp.ui.main.MainActivity;
 
@@ -26,19 +33,20 @@ public class LoginFragment extends Fragment {
     public static final int LOGIN_MIN_LENGTH = 3;
     private EditText mLoginEt;
     private EditText mPasswordEt;
-    private ProviderHelper mProviderHelper;
+    private boolean mBound;
+    private ServiceConnection mServiceConnection;
+    private DataBaseService mDataBaseService;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-        if (savedInstanceState == null) {
-            mProviderHelper = new ProviderHelper(getActivity().getApplicationContext().getContentResolver());
-        }
+    public void onStart() {
+        super.onStart();
+        mServiceConnection = getServiceConnection();
+        Intent intent = new Intent(getActivity(), DataBaseService.class);
+        getActivity().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Nullable
@@ -53,10 +61,35 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStop() {
+        if (mBound){
+            getActivity().unbindService(mServiceConnection);
+            mBound = false;
+        }
+        super.onStop();
+    }
+
+    @NonNull
+    private ServiceConnection getServiceConnection() {
+        return new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                mBound = true;
+                mDataBaseService = ((DataBaseService.DBBinder) iBinder).getService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                mBound = false;
+            }
+        };
+    }
+
 
     private void onLoginClick() {
         if (isValidLogin() && isValidPassword()) {
-            mProviderHelper.getUserByName(mLoginEt.getText().toString(), result -> checkUser(((User) result)));
+            mDataBaseService.getUserByName(mLoginEt.getText().toString(), this::checkUser);
 //            SignInReq req =
 //                    new SignInReq(mLoginEt.getText().toString(), mPasswordEt.getText().toString());
 //            ((LoginActivity) getActivity()).signIn(req);
@@ -69,8 +102,8 @@ public class LoginFragment extends Fragment {
             id = user.getId();
             startMainActivity(id);
         } else {
-            mProviderHelper.saveUser(mLoginEt.getText().toString(), result -> {
-                String stringId = ((Uri) result).getLastPathSegment();
+            mDataBaseService.saveUser(mLoginEt.getText().toString(), result -> {
+                String stringId = result.getLastPathSegment();
                 long userId = Long.parseLong(stringId);
                 startMainActivity(userId);
             });

@@ -30,6 +30,9 @@
 
         </service>
 
+        <service android:name=".data.local.DataBaseService">
+
+        </service>
         <provider
             android:authorities="com.hamom.epamapp.provider"
             android:name=".data.local.provider.TodoProvider"
