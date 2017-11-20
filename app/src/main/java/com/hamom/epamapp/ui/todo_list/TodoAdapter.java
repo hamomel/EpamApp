@@ -1,4 +1,4 @@
-package com.hamom.epamapp.ui.main;
+package com.hamom.epamapp.ui.todo_list;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

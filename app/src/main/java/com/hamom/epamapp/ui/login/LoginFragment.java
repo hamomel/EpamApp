@@ -1,52 +1,31 @@
 package com.hamom.epamapp.ui.login;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import com.hamom.epamapp.R;
-import com.hamom.epamapp.data.local.DataBaseService;
-import com.hamom.epamapp.data.local.ProviderHelper;
 import com.hamom.epamapp.data.models.User;
-import com.hamom.epamapp.data.network.NetworkService;
-import com.hamom.epamapp.data.network.requests.SignInReq;
-import com.hamom.epamapp.ui.main.MainActivity;
+import com.hamom.epamapp.ui.base.BaseFragment;
+import com.hamom.epamapp.ui.todo_list.TodoListActivity;
 
 
 /**
  * Created by hamom on 02.11.17.
  */
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends BaseFragment {
     public static final int PASSWORD_MIN_LENGTH = 6;
     public static final int LOGIN_MIN_LENGTH = 3;
     private EditText mLoginEt;
     private EditText mPasswordEt;
-    private boolean mBound;
-    private ServiceConnection mServiceConnection;
-    private DataBaseService mDataBaseService;
 
     public static LoginFragment newInstance() {
         return new LoginFragment();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mServiceConnection = getServiceConnection();
-        Intent intent = new Intent(getActivity(), DataBaseService.class);
-        getActivity().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Nullable
@@ -61,38 +40,9 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onStop() {
-        if (mBound){
-            getActivity().unbindService(mServiceConnection);
-            mBound = false;
-        }
-        super.onStop();
-    }
-
-    @NonNull
-    private ServiceConnection getServiceConnection() {
-        return new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                mBound = true;
-                mDataBaseService = ((DataBaseService.DBBinder) iBinder).getService();
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-                mBound = false;
-            }
-        };
-    }
-
-
     private void onLoginClick() {
         if (isValidLogin() && isValidPassword()) {
-            mDataBaseService.getUserByName(mLoginEt.getText().toString(), this::checkUser);
-//            SignInReq req =
-//                    new SignInReq(mLoginEt.getText().toString(), mPasswordEt.getText().toString());
-//            ((LoginActivity) getActivity()).signIn(req);
+            mLocalService.getUserByName(mLoginEt.getText().toString(), this::checkUser);
         }
     }
 
@@ -100,18 +50,18 @@ public class LoginFragment extends Fragment {
         long id;
         if (user != null) {
             id = user.getId();
-            startMainActivity(id);
+            startTodoListActivity(id);
         } else {
-            mDataBaseService.saveUser(mLoginEt.getText().toString(), result -> {
+            mLocalService.saveUser(mLoginEt.getText().toString(), result -> {
                 String stringId = result.getLastPathSegment();
                 long userId = Long.parseLong(stringId);
-                startMainActivity(userId);
+                startTodoListActivity(userId);
             });
         }
     }
 
-    private void startMainActivity(long id) {
-       Intent intent = MainActivity.getNewIntent(getActivity(), id);
+    private void startTodoListActivity(long id) {
+       Intent intent = TodoListActivity.getNewIntent(getActivity(), id);
        startActivity(intent);
     }
 
@@ -129,5 +79,25 @@ public class LoginFragment extends Fragment {
             return false;
         }
         return true;
+    }
+
+    @Override
+    protected boolean connectNetwork() {
+        return true;
+    }
+
+    @Override
+    protected boolean connectLocal() {
+        return true;
+    }
+
+    @Override
+    protected void onNetworkConnected() {
+
+    }
+
+    @Override
+    protected void onLocalConnected() {
+
     }
 }

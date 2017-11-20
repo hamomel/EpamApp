@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.main.MainActivity">
+        <activity android:name=".ui.todo_list.TodoListActivity">
 
         </activity>
 
@@ -30,7 +30,7 @@
 
         </service>
 
-        <service android:name=".data.local.DataBaseService">
+        <service android:name=".data.local.LocalService">
 
         </service>
         <provider

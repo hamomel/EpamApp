@@ -14,7 +14,6 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.hamom.epamapp.data.local.db.TodoContract;
 import com.hamom.epamapp.data.local.db.TodoContract.TodoEntry;
 import com.hamom.epamapp.data.local.db.TodoContract.UserEntry;
 import com.hamom.epamapp.data.models.Todo;
@@ -27,14 +26,14 @@ import java.util.List;
  * Created by hamom on 16.11.17.
  */
 
-public class DataBaseService extends Service {
+public class LocalService extends Service {
     private ContentResolver mContentResolver;
     private Handler mWorkingHandler;
     private Handler mUIHandler;
 
-    public class DBBinder extends Binder {
-        public DataBaseService getService() {
-            return DataBaseService.this;
+    public class LocalBinder extends Binder {
+        public LocalService getService() {
+            return LocalService.this;
         }
     }
 
@@ -56,7 +55,7 @@ public class DataBaseService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return new DBBinder();
+        return new LocalBinder();
     }
 
     public void getUserByName(String name, DBServiceCallback<User> callback) {
@@ -138,5 +137,20 @@ public class DataBaseService extends Service {
         int priority = cursor.getInt(cursor.getColumnIndex(TodoEntry.COLUMN_NAME_PRIORITY));
         long id = cursor.getLong(cursor.getColumnIndex(TodoEntry._ID));
         return new Todo(id, title, description, time, priority);
+    }
+
+    public void saveTodo(Todo todo, long userId, DBServiceCallback<Uri> callback) {
+        Uri uri = TodoEntry.CONTENT_URI;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TodoEntry.COLUMN_NAME_TITLE, todo.getTitle());
+        contentValues.put(TodoEntry.COLUMN_NAME_DESCRIPTION, todo.getDescription());
+        contentValues.put(TodoEntry.COLUMN_NAME_TIME, todo.getTime());
+        contentValues.put(TodoEntry.COLUMN_NAME_PRIORITY, todo.getPriority());
+        contentValues.put(TodoEntry.COLUMN_NAME_USER_ID, userId);
+
+        mWorkingHandler.post(() -> {
+            Uri newUri = mContentResolver.insert(uri, contentValues);
+            mUIHandler.post(() -> callback.onExecuted(newUri));
+        });
     }
 }

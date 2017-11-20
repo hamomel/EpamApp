@@ -23,7 +23,7 @@ public class TodoProvider extends ContentProvider {
     private static final UriMatcher mUriMatcher;
     private static final int USERS_URI = 1;
     private static final int USERS_ID_URI = 2;
-    private static final int TODO_URI = 3;
+    private static final int TODOS_URI = 3;
     private static final int TODO_ID_URI = 4;
 
 
@@ -31,7 +31,7 @@ public class TodoProvider extends ContentProvider {
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.UserEntry.TABLE_NAME, USERS_URI);
         mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.UserEntry.TABLE_NAME + "/#", USERS_ID_URI);
-        mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.TodoEntry.TABLE_NAME, TODO_ID_URI);
+        mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.TodoEntry.TABLE_NAME, TODOS_URI);
         mUriMatcher.addURI(TodoContract.CONTENT_URI.getAuthority(), TodoContract.UserEntry.TABLE_NAME + "/#", TODO_ID_URI);
 
     }
@@ -59,7 +59,7 @@ public class TodoProvider extends ContentProvider {
                 tableName = TodoContract.UserEntry.TABLE_NAME;
                 selection = TodoContract.UserEntry._ID + " = " + uri.getLastPathSegment();
                  break;
-            case TODO_URI:
+            case TODOS_URI:
                 tableName = TodoContract.TodoEntry.TABLE_NAME;
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = TodoContract.TodoEntry.COLUMN_NAME_TIME + " ASC";
@@ -87,7 +87,7 @@ public class TodoProvider extends ContentProvider {
                 return TodoContract.UserEntry.MIME_TYPE_TABLE;
             case USERS_ID_URI:
                 return TodoContract.UserEntry.MIME_TYPE_ITEM;
-            case TODO_URI:
+            case TODOS_URI:
                 return TodoContract.TodoEntry.MIME_TYPE_TABLE;
             case TODO_ID_URI:
                 return TodoContract.TodoEntry.MIME_TYPE_ITEM;
@@ -132,7 +132,7 @@ public class TodoProvider extends ContentProvider {
         switch (mUriMatcher.match(uri)) {
             case USERS_URI:
                 return TodoContract.UserEntry.TABLE_NAME;
-            case TODO_URI:
+            case TODOS_URI:
                 return TodoContract.TodoEntry.TABLE_NAME;
             default:
                 throw new IllegalArgumentException("Uri '" + uri.getPath() + "' doesn't match any known path");
