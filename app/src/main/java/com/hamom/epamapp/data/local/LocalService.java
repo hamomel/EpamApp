@@ -37,7 +37,7 @@ public class LocalService extends Service {
         }
     }
 
-    public interface DBServiceCallback<T> {
+    public interface LocalServiceCallback<T> {
         void onExecuted(T result);
     }
 
@@ -58,7 +58,7 @@ public class LocalService extends Service {
         return new LocalBinder();
     }
 
-    public void getUserByName(String name, DBServiceCallback<User> callback) {
+    public void getUserByName(String name, LocalServiceCallback<User> callback) {
         Uri uri = UserEntry.CONTENT_URI;
         String selection = UserEntry.COLUMN_NAME_NAME + " = ?";
         String[] selectionArgs = new String[]{name};
@@ -66,7 +66,7 @@ public class LocalService extends Service {
         getUser(callback, uri, selection, selectionArgs);
     }
 
-    public void getUserById(long id, DBServiceCallback<User> callback) {
+    public void getUserById(long id, LocalServiceCallback<User> callback) {
         Uri uri = UserEntry.CONTENT_URI;
         String selection = UserEntry.COLUMN_NAME_NAME + " = ?";
         String[] selectionArgs = new String[]{String.valueOf(id)};
@@ -74,7 +74,7 @@ public class LocalService extends Service {
         getUser(callback, uri, selection, selectionArgs);
     }
 
-    private void getUser(DBServiceCallback<User> callback, Uri uri, String selection, String[] selectionArgs) {
+    private void getUser(LocalServiceCallback<User> callback, Uri uri, String selection, String[] selectionArgs) {
         mWorkingHandler.post(() -> {
                Cursor cursor = mContentResolver.query(uri, null, selection, selectionArgs, null);
                User user = fetchUserFromCursor(cursor);
@@ -94,7 +94,7 @@ public class LocalService extends Service {
         }
     }
 
-    public void saveUser(String name, DBServiceCallback<Uri> callback) {
+    public void saveUser(String name, LocalServiceCallback<Uri> callback) {
         Uri uri = UserEntry.CONTENT_URI;
         ContentValues contentValues = new ContentValues();
         contentValues.put(UserEntry.COLUMN_NAME_NAME, name);
@@ -105,7 +105,19 @@ public class LocalService extends Service {
         });
     }
 
-    public void getAllUserTodos(long userId, DBServiceCallback<List<Todo>> callback) {
+    public void getTodo(long todoId, LocalServiceCallback<Todo> callback) {
+        Uri uri = TodoEntry.CONTENT_URI;
+        String selection = TodoEntry._ID;
+        String[] selectionArgs = new String[] {String.valueOf(todoId)};
+
+        mWorkingHandler.post(() -> {
+            Cursor cursor = mContentResolver.query(uri, null, selection, selectionArgs, null);
+            Todo todo = fetchTodoFromCursor(cursor);
+            mUIHandler.post(() -> callback.onExecuted(todo));
+        });
+    }
+
+    public void getAllUserTodos(long userId, LocalServiceCallback<List<Todo>> callback) {
         Uri uri = TodoEntry.CONTENT_URI;
         String selection = TodoEntry.COLUMN_NAME_USER_ID + " = ?";
         String[] selectionArgs = new String[]{String.valueOf(userId)};
@@ -139,7 +151,7 @@ public class LocalService extends Service {
         return new Todo(id, title, description, time, priority);
     }
 
-    public void saveTodo(Todo todo, long userId, DBServiceCallback<Uri> callback) {
+    public void saveTodo(Todo todo, long userId, LocalServiceCallback<Uri> callback) {
         Uri uri = TodoEntry.CONTENT_URI;
         ContentValues contentValues = new ContentValues();
         contentValues.put(TodoEntry.COLUMN_NAME_TITLE, todo.getTitle());

@@ -1,19 +1,25 @@
 package com.hamom.epamapp.ui.todo_list;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Telephony;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.hamom.epamapp.R;
 import com.hamom.epamapp.data.models.Todo;
 import com.hamom.epamapp.ui.base.BaseFragment;
+import com.hamom.epamapp.ui.detail.TodoDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +34,7 @@ import retrofit2.Response;
 
 public class TodoListFragment extends BaseFragment {
     private static final String ARG_USER_ID = "user_id";
+    private static final int REQUEST_NEW_TODO = 1;
     private RecyclerView mTodoRecycler;
     private TodoAdapter mAdapter;
     private List<Todo> mTodos;
@@ -45,6 +52,7 @@ public class TodoListFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mUserId = getArguments().getLong(ARG_USER_ID);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         //check for each user
@@ -64,6 +72,23 @@ public class TodoListFragment extends BaseFragment {
         mAdapter = new TodoAdapter();
         mTodoRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTodoRecycler.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.todo_list, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add:
+                Intent intent = TodoDetailActivity.getIntent(getActivity());
+                startActivityForResult(intent, REQUEST_NEW_TODO);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

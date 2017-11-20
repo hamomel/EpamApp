@@ -1,10 +1,18 @@
 <resources>
-  <string name="app_name">EpamApp</string>
-  <string name="password_hint">Пароль</string>
-  <string name="login_hint">Логин</string>
-  <string name="enter_hint">Войти</string>
-  <string name="enter_success">Ура! Вы вошли!</string>
-  <string name="wrong_login_or_password">Не верный логин или пароль!</string>
-  <string name="something_went_wrong">Извините. Что-то пошло не так.</string>
-  <string name="too_short">Не менее %d символов!</string>
+    <string name="app_name">EpamApp</string>
+    <string name="password_hint">Пароль</string>
+    <string name="login_hint">Логин</string>
+    <string name="enter_hint">Войти</string>
+    <string name="enter_success">Ура! Вы вошли!</string>
+    <string name="wrong_login_or_password">Не верный логин или пароль!</string>
+    <string name="something_went_wrong">Извините. Что-то пошло не так.</string>
+    <string name="too_short">Не менее %d символов!</string>
+    <string name="add_todo">Создать</string>
+    <string name="title">Заголвок</string>
+    <string name="description">Описание</string>
+    <string name="priority">Приоритет</string>
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="save">Сохранить</string>
+    <string name="ok_text">OK</string>
 </resources>
