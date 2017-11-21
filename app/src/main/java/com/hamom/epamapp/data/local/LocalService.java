@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.facebook.stetho.Stetho;
 import com.hamom.epamapp.data.local.db.TodoContract.TodoEntry;
 import com.hamom.epamapp.data.local.db.TodoContract.UserEntry;
 import com.hamom.epamapp.data.models.Todo;
@@ -107,13 +108,17 @@ public class LocalService extends Service {
 
     public void getTodo(long todoId, LocalServiceCallback<Todo> callback) {
         Uri uri = TodoEntry.CONTENT_URI;
-        String selection = TodoEntry._ID;
+        String selection = TodoEntry._ID + " = ?";
         String[] selectionArgs = new String[] {String.valueOf(todoId)};
 
         mWorkingHandler.post(() -> {
             Cursor cursor = mContentResolver.query(uri, null, selection, selectionArgs, null);
-            Todo todo = fetchTodoFromCursor(cursor);
-            mUIHandler.post(() -> callback.onExecuted(todo));
+            Todo[] todo = new Todo[1];
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                todo[0] = fetchTodoFromCursor(cursor);
+            }
+            mUIHandler.post(() -> callback.onExecuted(todo[0]));
         });
     }
 
@@ -163,6 +168,24 @@ public class LocalService extends Service {
         mWorkingHandler.post(() -> {
             Uri newUri = mContentResolver.insert(uri, contentValues);
             mUIHandler.post(() -> callback.onExecuted(newUri));
+        });
+    }
+
+    public void updateTodo(Todo todo, long userId, LocalServiceCallback<Integer> callback) {
+        Uri uri = TodoEntry.CONTENT_URI;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TodoEntry.COLUMN_NAME_TITLE, todo.getTitle());
+        contentValues.put(TodoEntry.COLUMN_NAME_DESCRIPTION, todo.getDescription());
+        contentValues.put(TodoEntry.COLUMN_NAME_TIME, todo.getTime());
+        contentValues.put(TodoEntry.COLUMN_NAME_PRIORITY, todo.getPriority());
+        contentValues.put(TodoEntry.COLUMN_NAME_USER_ID, userId);
+
+        String where = TodoEntry._ID;
+        String[] whereArgs = new String[] { String.valueOf(todo.getId()) };
+
+        mWorkingHandler.post(() -> {
+            int updated = mContentResolver.update(uri, contentValues, where, whereArgs);
+            mUIHandler.post(() -> callback.onExecuted(updated));
         });
     }
 }

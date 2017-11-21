@@ -15,4 +15,11 @@
     <string name="time">Время</string>
     <string name="save">Сохранить</string>
     <string name="ok_text">OK</string>
+    <string name="edit">Редактировать</string>
+
+    <string-array name="todo_priority">
+        <item>Низкий</item>
+        <item>Средний</item>
+        <item>Высокий</item>
+    </string-array>
 </resources>

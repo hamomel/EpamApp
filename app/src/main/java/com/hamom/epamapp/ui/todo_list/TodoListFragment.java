@@ -34,7 +34,6 @@ import retrofit2.Response;
 
 public class TodoListFragment extends BaseFragment {
     private static final String ARG_USER_ID = "user_id";
-    private static final int REQUEST_NEW_TODO = 1;
     private RecyclerView mTodoRecycler;
     private TodoAdapter mAdapter;
     private List<Todo> mTodos;
@@ -69,9 +68,14 @@ public class TodoListFragment extends BaseFragment {
     }
 
     private void initView() {
-        mAdapter = new TodoAdapter();
+        mAdapter = new TodoAdapter(this::openDetailScreen);
         mTodoRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTodoRecycler.setAdapter(mAdapter);
+    }
+
+    private void openDetailScreen(long itemId) {
+        Intent intent = TodoDetailActivity.getIntent(getActivity(), mUserId, itemId);
+        startActivity(intent);
     }
 
     @Override
@@ -84,8 +88,7 @@ public class TodoListFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.add:
-                Intent intent = TodoDetailActivity.getIntent(getActivity());
-                startActivityForResult(intent, REQUEST_NEW_TODO);
+                openDetailScreen(-1);
                 return true;
         }
         return super.onOptionsItemSelected(item);

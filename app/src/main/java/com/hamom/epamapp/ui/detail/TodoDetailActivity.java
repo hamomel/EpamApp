@@ -12,19 +12,22 @@ import com.hamom.epamapp.ui.base.OneFragmentActivity;
 
 public class TodoDetailActivity extends OneFragmentActivity {
     private static final String EXTRA_TODO_ID = "extra_todo_id";
+    private static final String EXTRA_USER_ID = "extra_user_id";
 
-    public static Intent getIntent(Context context, long todoId) {
+    public static Intent getIntent(Context context, long userId, long todoId) {
         Intent intent = new Intent(context, TodoDetailActivity.class);
+        intent.putExtra(EXTRA_USER_ID, userId);
         intent.putExtra(EXTRA_TODO_ID, todoId);
         return intent;
     }
     @Override
     protected Fragment getFragment() {
         long todoId = getIntent().getLongExtra(EXTRA_TODO_ID, -1);
-        return TodoDetailFragment.newInstance(todoId);
+        long userId = getIntent().getLongExtra(EXTRA_USER_ID, -1);
+        return TodoDetailFragment.newInstance(todoId, userId);
     }
 
-    public static Intent getIntent(Context context) {
-        return getIntent(context, -1);
+    public static Intent getIntent(Context context, long userId) {
+        return getIntent(context, userId, -1);
     }
 }

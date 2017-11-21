@@ -21,6 +21,11 @@ import java.util.List;
 public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder> {
 
     private List<Todo> mTodos = new ArrayList<>();
+    private TodoItemOnClickListener mOnClickListener;
+
+    public TodoAdapter(TodoItemOnClickListener onClickListener) {
+        mOnClickListener = onClickListener;
+    }
 
     void setTodos(List<Todo> todos) {
         mTodos = todos;
@@ -36,7 +41,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
     @Override
     public void onBindViewHolder(TodoViewHolder holder, int position) {
         Todo todo = mTodos.get(position);
-        holder.bind(todo);
+        holder.bind(todo, mOnClickListener);
     }
 
     @Override
@@ -57,11 +62,12 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
             mDescTextView = itemView.findViewById(R.id.description_tv);
         }
 
-        void bind(Todo todo) {
+        void bind(Todo todo, TodoItemOnClickListener listener) {
             String time = getTimeString(todo.getTime());
             mTimeTextView.setText(time);
             mTitleTextView.setText(todo.getTitle());
             mDescTextView.setText(todo.getDescription());
+            itemView.setOnClickListener(itemView -> listener.onClick(todo.getId()));
         }
 
         private String getTimeString(long time) {
@@ -69,5 +75,9 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
             SimpleDateFormat format = new SimpleDateFormat("dd MMM yy HH:mm");
             return format.format(date);
         }
+    }
+
+    public interface TodoItemOnClickListener {
+        void onClick(long itemId);
     }
 }
