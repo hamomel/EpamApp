@@ -35,4 +35,12 @@ public abstract class OneFragmentActivity extends AppCompatActivity {
     }
 
     protected abstract Fragment getFragment();
+
+    @Override
+    public void onBackPressed() {
+        BaseFragment fragment = ((BaseFragment) getSupportFragmentManager().findFragmentById(R.id.main_frame));
+        if (!fragment.onBackPressed()) {
+            super.onBackPressed();
+        }
+    }
 }

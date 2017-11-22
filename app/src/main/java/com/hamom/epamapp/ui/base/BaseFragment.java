@@ -114,5 +114,7 @@ public abstract class BaseFragment extends Fragment {
         return metrics.density;
     }
 
-
+    public boolean onBackPressed() {
+        return false;
+    }
 }

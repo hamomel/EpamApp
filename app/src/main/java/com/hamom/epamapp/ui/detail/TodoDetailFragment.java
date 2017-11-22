@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.support.transition.TransitionManager;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +53,7 @@ public class TodoDetailFragment extends BaseFragment {
     private Button mOkTimeBtn;
     private Button mOkDateBtn;
     private Button mSaveBtn;
+    private boolean isNormalState = true;
 
     public static Fragment newInstance(long todoId, long userId) {
         if (userId < 0) {
@@ -159,6 +162,8 @@ public class TodoDetailFragment extends BaseFragment {
     }
 
     private void saveTodo() {
+        if (!isValidTitle() || !isValidDescription()) return;
+
         String title = mTitleET.getText().toString();
         String description = mDescET.getText().toString();
         int priority = mPrioritySpinner.getSelectedItemPosition();
@@ -174,6 +179,22 @@ public class TodoDetailFragment extends BaseFragment {
             Todo todo = new Todo(mTodoId, title, description, date.getTime(), priority);
             mLocalService.saveTodo(todo, mUserId, result -> returnToListScreen());
         }
+    }
+
+    private boolean isValidTitle() {
+        if (TextUtils.isEmpty(mTitleET.getText())) {
+            mTitleET.setError(getString(R.string.field_cant_be_empty));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isValidDescription() {
+        if (TextUtils.isEmpty(mDescET.getText())) {
+            mDescET.setError(getString(R.string.field_cant_be_empty));
+            return false;
+        }
+        return true;
     }
 
     private void returnToListScreen() {
@@ -233,6 +254,7 @@ public class TodoDetailFragment extends BaseFragment {
         mDescET.setEnabled(false);
         mPrioritySpinner.setEnabled(false);
         mDateTV.setEnabled(false);
+        mTimeTV.setEnabled(false);
         mTitleET.setEnabled(false);
         mSaveBtn.setText(R.string.edit);
         isEditMode = false;
@@ -243,6 +265,7 @@ public class TodoDetailFragment extends BaseFragment {
         mDescET.setEnabled(true);
         mPrioritySpinner.setEnabled(true);
         mDateTV.setEnabled(true);
+        mTimeTV.setEnabled(true);
         mTitleET.setEnabled(true);
         mSaveBtn.setText(R.string.save);
         isEditMode = true;
@@ -250,14 +273,59 @@ public class TodoDetailFragment extends BaseFragment {
 
 
     private void setNormalState() {
+        isNormalState = true;
+        performTransition(mInitialSet);
 
     }
 
     private void setTimePickerState() {
+        ConstraintSet set = new ConstraintSet();
+        set.setVisibility(R.id.title_et, ConstraintSet.GONE);
+        set.setVisibility(R.id.description_et, ConstraintSet.GONE);
+        set.setVisibility(R.id.priority_tv, ConstraintSet.GONE);
+        set.setVisibility(R.id.priority_spinner, ConstraintSet.GONE);
+        set.setVisibility(R.id.date_text_tv, ConstraintSet.GONE);
+        set.setVisibility(R.id.date_tv, ConstraintSet.GONE);
+        set.setVisibility(R.id.date_picker, ConstraintSet.GONE);
+        set.setVisibility(R.id.ok_date_btn, ConstraintSet.GONE);
+        set.setVisibility(R.id.save_btn, ConstraintSet.GONE);
+        set.setVisibility(R.id.time_picker, ConstraintSet.VISIBLE);
+        set.setVisibility(R.id.ok_time_btn, ConstraintSet.VISIBLE);
 
+        isNormalState = false;
+        performTransition(set);
     }
 
     private void setDatePickerState() {
+        ConstraintSet set = new ConstraintSet();
+        set.setVisibility(R.id.title_et, ConstraintSet.GONE);
+        set.setVisibility(R.id.description_et, ConstraintSet.GONE);
+        set.setVisibility(R.id.priority_tv, ConstraintSet.GONE);
+        set.setVisibility(R.id.priority_spinner, ConstraintSet.GONE);
+        set.setVisibility(R.id.time_text_tv, ConstraintSet.GONE);
+        set.setVisibility(R.id.time_tv, ConstraintSet.GONE);
+        set.setVisibility(R.id.time_picker, ConstraintSet.GONE);
+        set.setVisibility(R.id.ok_time_btn, ConstraintSet.GONE);
+        set.setVisibility(R.id.save_btn, ConstraintSet.GONE);
+        set.setVisibility(R.id.date_picker, ConstraintSet.VISIBLE);
 
+        set.setVisibility(R.id.ok_date_btn, ConstraintSet.VISIBLE);
+
+        isNormalState = false;
+        performTransition(set);
+    }
+
+    private void performTransition(ConstraintSet set) {
+        TransitionManager.beginDelayedTransition(mConstraintLayout);
+        set.applyTo(mConstraintLayout);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (!isNormalState) {
+            setNormalState();
+            return true;
+        }
+        return super.onBackPressed();
     }
 }
