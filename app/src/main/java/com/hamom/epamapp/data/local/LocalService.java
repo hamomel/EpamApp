@@ -126,9 +126,10 @@ public class LocalService extends Service {
         Uri uri = TodoEntry.CONTENT_URI;
         String selection = TodoEntry.COLUMN_NAME_USER_ID + " = ?";
         String[] selectionArgs = new String[]{String.valueOf(userId)};
+        String sort = TodoEntry.COLUMN_NAME_TIME;
 
         mWorkingHandler.post(() -> {
-            Cursor cursor = mContentResolver.query(uri, null, selection, selectionArgs, null);
+            Cursor cursor = mContentResolver.query(uri, null, selection, selectionArgs, sort);
             List<Todo> todos = fetchTodoListFromCursor(cursor);
             mUIHandler.post(() -> callback.onExecuted(todos));
         });
@@ -180,7 +181,7 @@ public class LocalService extends Service {
         contentValues.put(TodoEntry.COLUMN_NAME_PRIORITY, todo.getPriority());
         contentValues.put(TodoEntry.COLUMN_NAME_USER_ID, userId);
 
-        String where = TodoEntry._ID;
+        String where = TodoEntry._ID + " = ?";
         String[] whereArgs = new String[] { String.valueOf(todo.getId()) };
 
         mWorkingHandler.post(() -> {

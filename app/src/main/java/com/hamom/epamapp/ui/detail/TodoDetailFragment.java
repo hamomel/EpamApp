@@ -137,6 +137,7 @@ public class TodoDetailFragment extends BaseFragment {
             initPickers(date);
             setEditMode();
         }
+        mTimePicker.setIs24HourView(true);
         mDateTV.setOnClickListener(view -> setDatePickerState());
         mTimeTV.setOnClickListener(view -> setTimePickerState());
         mOkDateBtn.setOnClickListener(view -> {
@@ -148,8 +149,11 @@ public class TodoDetailFragment extends BaseFragment {
             setNormalState();
         });
         mSaveBtn.setOnClickListener(view -> {
-            if (isEditMode) saveTodo();
-            changeMode();
+            if (isEditMode) {
+                saveTodo();
+            } else {
+                changeMode();
+            }
         });
     }
 
@@ -163,7 +167,7 @@ public class TodoDetailFragment extends BaseFragment {
 
     private void saveTodo() {
         if (!isValidTitle() || !isValidDescription()) return;
-
+        
         String title = mTitleET.getText().toString();
         String description = mDescET.getText().toString();
         int priority = mPrioritySpinner.getSelectedItemPosition();
@@ -280,14 +284,13 @@ public class TodoDetailFragment extends BaseFragment {
 
     private void setTimePickerState() {
         ConstraintSet set = new ConstraintSet();
+        set.clone(mInitialSet);
         set.setVisibility(R.id.title_et, ConstraintSet.GONE);
         set.setVisibility(R.id.description_et, ConstraintSet.GONE);
         set.setVisibility(R.id.priority_tv, ConstraintSet.GONE);
         set.setVisibility(R.id.priority_spinner, ConstraintSet.GONE);
         set.setVisibility(R.id.date_text_tv, ConstraintSet.GONE);
         set.setVisibility(R.id.date_tv, ConstraintSet.GONE);
-        set.setVisibility(R.id.date_picker, ConstraintSet.GONE);
-        set.setVisibility(R.id.ok_date_btn, ConstraintSet.GONE);
         set.setVisibility(R.id.save_btn, ConstraintSet.GONE);
         set.setVisibility(R.id.time_picker, ConstraintSet.VISIBLE);
         set.setVisibility(R.id.ok_time_btn, ConstraintSet.VISIBLE);
@@ -298,17 +301,15 @@ public class TodoDetailFragment extends BaseFragment {
 
     private void setDatePickerState() {
         ConstraintSet set = new ConstraintSet();
+        set.clone(mInitialSet);
         set.setVisibility(R.id.title_et, ConstraintSet.GONE);
         set.setVisibility(R.id.description_et, ConstraintSet.GONE);
         set.setVisibility(R.id.priority_tv, ConstraintSet.GONE);
         set.setVisibility(R.id.priority_spinner, ConstraintSet.GONE);
         set.setVisibility(R.id.time_text_tv, ConstraintSet.GONE);
         set.setVisibility(R.id.time_tv, ConstraintSet.GONE);
-        set.setVisibility(R.id.time_picker, ConstraintSet.GONE);
-        set.setVisibility(R.id.ok_time_btn, ConstraintSet.GONE);
         set.setVisibility(R.id.save_btn, ConstraintSet.GONE);
         set.setVisibility(R.id.date_picker, ConstraintSet.VISIBLE);
-
         set.setVisibility(R.id.ok_date_btn, ConstraintSet.VISIBLE);
 
         isNormalState = false;

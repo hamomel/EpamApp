@@ -67,7 +67,9 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
             mTimeTextView.setText(time);
             mTitleTextView.setText(todo.getTitle());
             mDescTextView.setText(todo.getDescription());
-            itemView.setOnClickListener(itemView -> listener.onClick(todo.getId()));
+            itemView.setOnClickListener(itemView -> {
+                listener.onClick(todo.getId());
+            });
         }
 
         private String getTimeString(long time) {

@@ -112,7 +112,6 @@ public class TodoListFragment extends BaseFragment {
                if (response.isSuccessful()) {
                    if (isFirstStart){
                        mTodos = response.body();
-                       mAdapter.setTodos(mTodos);
                        saveTodosInDb();
                    }
                } else {
@@ -130,13 +129,14 @@ public class TodoListFragment extends BaseFragment {
     private void saveTodosInDb() {
         if (mBoundLocal && mTodos != null) {
             for (Todo todo : mTodos) {
-                mLocalService.saveTodo(todo, mUserId, result -> {});
+                mLocalService.saveTodo(todo, mUserId, result -> loadTodosFromDb());
             }
             saveFirstStart();
         }
     }
 
     private void saveFirstStart() {
+        isFirstStart = false;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(String.valueOf(mUserId), false);
@@ -148,10 +148,15 @@ public class TodoListFragment extends BaseFragment {
         if (isFirstStart) {
             saveTodosInDb();
         } else {
-            mLocalService.getAllUserTodos(mUserId, result -> {
-                mTodos = result;
-                mAdapter.setTodos(mTodos);
-            });
+            loadTodosFromDb();
         }
+
+    }
+
+    private void loadTodosFromDb() {
+        mLocalService.getAllUserTodos(mUserId, result -> {
+            mTodos = result;
+            mAdapter.setTodos(mTodos);
+        });
     }
 }
