@@ -1,5 +1,6 @@
 package com.hamom.epamapp.notification;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -41,32 +42,38 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent detailIntent = TodoDetailActivity.getIntent(context, intent.getLongExtra(EXTRA_USER_ID, -1),
-                intent.getLongExtra(EXTRA_TODO_ID, -1));
+        Notification notification = getNotification(context, intent);
+        int notificationId = ((int) intent.getLongExtra(EXTRA_TODO_ID, -1));
 
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
-        stackBuilder.addParentStack(TodoDetailActivity.class);
-        stackBuilder.addParentStack(TodoListActivity.class);
-        stackBuilder.addNextIntent(detailIntent);
-        stackBuilder.editIntentAt(0).putExtra(TodoListActivity.EXTRA_USER_ID,
-                intent.getLongExtra(EXTRA_USER_ID, -1));
+        NotificationManager manager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
+        manager.notify(notificationId, notification);
+    }
 
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
+    private Notification getNotification(Context context, Intent intent) {
+        PendingIntent pendingIntent = getPendingIntent(context, intent);
         Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+        return new NotificationCompat.Builder(context)
                 .setContentTitle(intent.getStringExtra(EXTRA_TITLE))
                 .setContentText(intent.getStringExtra(EXTRA_DESCRIPTION))
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setSound(sound)
                 .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
+                .setContentIntent(pendingIntent)
+                .build();
+    }
 
-        int notificationId = ((int) intent.getLongExtra(EXTRA_TODO_ID, -1));
-        NotificationManager notificationManager = ((NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE));
-        notificationManager.notify(notificationId, builder.build());
+    private PendingIntent getPendingIntent(Context context, Intent intent) {
+        long userId = intent.getLongExtra(EXTRA_USER_ID, -1);
+        long todoId = intent.getLongExtra(EXTRA_TODO_ID, -1);
+        Intent detailIntent = TodoDetailActivity.getIntent(context, userId, todoId);
 
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context)
+                .addParentStack(TodoDetailActivity.class)
+                .addParentStack(TodoListActivity.class)
+                .addNextIntent(detailIntent);
+        stackBuilder.editIntentAt(0).putExtra(TodoListActivity.EXTRA_USER_ID, userId);
+
+        return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

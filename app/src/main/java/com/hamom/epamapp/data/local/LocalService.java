@@ -203,6 +203,7 @@ public class LocalService extends Service {
 
         int requestCode = (int) todo.getId();
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent, 0);
-        ((AlarmManager) getSystemService(ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, todo.getTime(), pendingIntent);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, todo.getTime(), pendingIntent);
     }
 }
