@@ -39,8 +39,9 @@ public class TodoDetailFragment extends BaseFragment {
     private long mUserId;
     private long mTodoId;
     private Todo mTodo;
-    private ConstraintSet mInitialSet = new ConstraintSet();
     private boolean isEditMode;
+    private boolean isNormalState = true;
+    private ConstraintSet mInitialSet = new ConstraintSet();
 
     private ConstraintLayout mConstraintLayout;
     private EditText mTitleET;
@@ -53,7 +54,6 @@ public class TodoDetailFragment extends BaseFragment {
     private Button mOkTimeBtn;
     private Button mOkDateBtn;
     private Button mSaveBtn;
-    private boolean isNormalState = true;
 
     public static Fragment newInstance(long todoId, long userId) {
         if (userId < 0) {
@@ -157,14 +157,6 @@ public class TodoDetailFragment extends BaseFragment {
         });
     }
 
-    private void changeMode() {
-        if (isEditMode) {
-            setViewMode();
-        } else {
-            setEditMode();
-        }
-    }
-
     private void saveTodo() {
         if (!isValidTitle() || !isValidDescription()) return;
         
@@ -223,6 +215,35 @@ public class TodoDetailFragment extends BaseFragment {
         return mTodo != null ? new Date(mTodo.getTime()) : new Date();
     }
 
+    private void changeMode() {
+        if (isEditMode) {
+            setViewMode();
+        } else {
+            setEditMode();
+        }
+    }
+
+    private void setViewMode() {
+        mTitleET.setEnabled(false);
+        mDescET.setEnabled(false);
+        mPrioritySpinner.setEnabled(false);
+        mDateTV.setEnabled(false);
+        mTimeTV.setEnabled(false);
+        mTitleET.setEnabled(false);
+        mSaveBtn.setText(R.string.edit);
+        isEditMode = false;
+    }
+
+    private void setEditMode() {
+        mTitleET.setEnabled(true);
+        mDescET.setEnabled(true);
+        mPrioritySpinner.setEnabled(true);
+        mDateTV.setEnabled(true);
+        mTimeTV.setEnabled(true);
+        mTitleET.setEnabled(true);
+        mSaveBtn.setText(R.string.save);
+        isEditMode = true;
+    }
     private void initPickers(Date date) {
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
         calendar.setTime(date);
@@ -253,33 +274,10 @@ public class TodoDetailFragment extends BaseFragment {
         mTimeTV.setText(mTimeFormat.format(date));
     }
 
-    private void setViewMode() {
-        mTitleET.setEnabled(false);
-        mDescET.setEnabled(false);
-        mPrioritySpinner.setEnabled(false);
-        mDateTV.setEnabled(false);
-        mTimeTV.setEnabled(false);
-        mTitleET.setEnabled(false);
-        mSaveBtn.setText(R.string.edit);
-        isEditMode = false;
-    }
-
-    private void setEditMode() {
-        mTitleET.setEnabled(true);
-        mDescET.setEnabled(true);
-        mPrioritySpinner.setEnabled(true);
-        mDateTV.setEnabled(true);
-        mTimeTV.setEnabled(true);
-        mTitleET.setEnabled(true);
-        mSaveBtn.setText(R.string.save);
-        isEditMode = true;
-    }
-
 
     private void setNormalState() {
         isNormalState = true;
         performTransition(mInitialSet);
-
     }
 
     private void setTimePickerState() {
