@@ -21,11 +21,13 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.todo_list.TodoListActivity">
+        <activity android:name=".ui.todo_list.TodoListActivity"
+            android:launchMode="singleTop">
 
         </activity>
 
-        <activity android:name=".ui.detail.TodoDetailActivity">
+        <activity android:name=".ui.detail.TodoDetailActivity"
+            android:parentActivityName=".ui.todo_list.TodoListActivity">
 
         </activity>
 
@@ -43,6 +45,10 @@
             android:exported="false">
 
         </provider>
+
+        <receiver android:name=".notification.NotificationReceiver">
+
+        </receiver>
     </application>
 
 </manifest>

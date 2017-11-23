@@ -41,6 +41,9 @@ public class TodoListFragment extends BaseFragment {
     private long mUserId;
 
     public static Fragment newInstance(long userId) {
+        if (userId < 0) {
+            throw new IllegalStateException("User id must be set explicit. Now it = " + userId);
+        }
         Bundle args = new Bundle();
         args.putLong(ARG_USER_ID, userId);
         Fragment fragment = new TodoListFragment();

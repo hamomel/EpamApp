@@ -11,7 +11,7 @@ import com.hamom.epamapp.ui.base.OneFragmentActivity;
  */
 
 public class TodoListActivity extends OneFragmentActivity {
-    private static final String EXTRA_USER_ID = "extra_user_id";
+    public static final String EXTRA_USER_ID = "extra_user_id";
     @Override
     protected Fragment getFragment() {
         long userId = getIntent().getLongExtra(EXTRA_USER_ID, -1);

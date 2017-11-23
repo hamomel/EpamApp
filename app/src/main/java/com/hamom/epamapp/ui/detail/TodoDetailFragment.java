@@ -1,5 +1,7 @@
 package com.hamom.epamapp.ui.detail;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -20,6 +22,7 @@ import android.widget.TimePicker;
 import com.hamom.epamapp.R;
 import com.hamom.epamapp.data.models.Todo;
 import com.hamom.epamapp.ui.base.BaseFragment;
+import com.hamom.epamapp.ui.todo_list.TodoListActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

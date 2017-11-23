@@ -1,5 +1,7 @@
 package com.hamom.epamapp.data.local;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -19,6 +21,7 @@ import com.hamom.epamapp.data.local.db.TodoContract.TodoEntry;
 import com.hamom.epamapp.data.local.db.TodoContract.UserEntry;
 import com.hamom.epamapp.data.models.Todo;
 import com.hamom.epamapp.data.models.User;
+import com.hamom.epamapp.notification.NotificationReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,6 +161,8 @@ public class LocalService extends Service {
     }
 
     public void saveTodo(Todo todo, long userId, LocalServiceCallback<Uri> callback) {
+        scheduleNotification(todo, userId);
+
         Uri uri = TodoEntry.CONTENT_URI;
         ContentValues contentValues = new ContentValues();
         contentValues.put(TodoEntry.COLUMN_NAME_TITLE, todo.getTitle());
@@ -173,6 +178,8 @@ public class LocalService extends Service {
     }
 
     public void updateTodo(Todo todo, long userId, LocalServiceCallback<Integer> callback) {
+        scheduleNotification(todo, userId);
+
         Uri uri = TodoEntry.CONTENT_URI;
         ContentValues contentValues = new ContentValues();
         contentValues.put(TodoEntry.COLUMN_NAME_TITLE, todo.getTitle());
@@ -188,5 +195,14 @@ public class LocalService extends Service {
             int updated = mContentResolver.update(uri, contentValues, where, whereArgs);
             mUIHandler.post(() -> callback.onExecuted(updated));
         });
+    }
+
+    private void scheduleNotification(Todo todo, long userId) {
+        Intent intent = NotificationReceiver
+                .getNewIntent(this, todo.getId(), userId, todo.getTitle(), todo.getDescription());
+
+        int requestCode = (int) todo.getId();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, requestCode, intent, 0);
+        ((AlarmManager) getSystemService(ALARM_SERVICE)).set(AlarmManager.RTC_WAKEUP, todo.getTime(), pendingIntent);
     }
 }
