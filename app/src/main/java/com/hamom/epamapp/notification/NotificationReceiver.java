@@ -12,6 +12,7 @@ import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.hamom.epamapp.BuildConfig;
@@ -75,6 +76,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 .addNextIntent(detailIntent);
         stackBuilder.editIntentAt(0).putExtra(TodoListActivity.EXTRA_USER_ID, userId);
 
-        return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        int requestCode = ((int) todoId);
+        return stackBuilder.getPendingIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }
