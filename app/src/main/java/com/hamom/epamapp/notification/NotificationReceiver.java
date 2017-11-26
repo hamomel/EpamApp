@@ -26,6 +26,7 @@ import com.hamom.epamapp.utils.ConstantManager;
  */
 
 public class NotificationReceiver extends BroadcastReceiver {
+    public static final String GROUP_KEY = "todo_group";
     private static final String EXTRA_TODO_ID = "extra_todo_id";
     private static final String EXTRA_USER_ID = "extra_user_id";
     private static final String EXTRA_TITLE = "extra_title";
@@ -46,18 +47,18 @@ public class NotificationReceiver extends BroadcastReceiver {
         int notificationId = ((int) intent.getLongExtra(EXTRA_TODO_ID, -1));
 
         NotificationManager manager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
+        //noinspection ConstantConditions
         manager.notify(notificationId, notification);
     }
 
     private Notification getNotification(Context context, Intent intent) {
         PendingIntent pendingIntent = getPendingIntent(context, intent);
-        Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         return new NotificationCompat.Builder(context)
                 .setContentTitle(intent.getStringExtra(EXTRA_TITLE))
                 .setContentText(intent.getStringExtra(EXTRA_DESCRIPTION))
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setSound(sound)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
                 .build();
