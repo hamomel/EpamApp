@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.app.NotificationBuilderWithBuilderAccessor;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
@@ -28,6 +30,7 @@ import com.hamom.epamapp.utils.ConstantManager;
 
 public class NotificationReceiver extends BroadcastReceiver {
     public static final String GROUP_KEY = "todo_group";
+    public static final int SUMMARY_ID = 111;
     private static final String EXTRA_TODO_ID = "extra_todo_id";
     private static final String EXTRA_USER_ID = "extra_user_id";
     private static final String EXTRA_TITLE = "extra_title";
@@ -50,6 +53,31 @@ public class NotificationReceiver extends BroadcastReceiver {
         NotificationManager manager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
         //noinspection ConstantConditions
         manager.notify(notificationId, notification);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            Notification summary = getSummary(context, intent);
+            manager.notify(SUMMARY_ID, summary);
+        }
+    }
+
+    private Notification getSummary(Context context, Intent intent) {
+        PendingIntent summaryIntent = getSummaryIntent(context, intent);
+        return  new NotificationCompat.Builder(context)
+                .setContentTitle(context.getString(R.string.app_name))
+                .setContentText(context.getString(R.string.some_new_todos))
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setAutoCancel(true)
+                .setContentIntent(summaryIntent)
+                .setGroup(GROUP_KEY)
+                .setGroupSummary(true)
+                .build();
+    }
+
+    private PendingIntent getSummaryIntent(Context context, Intent intent) {
+        Intent listIntent = TodoListActivity.getNewIntent(context, intent.getLongExtra(EXTRA_USER_ID, -1));
+
+        return PendingIntent.getActivity(context, 0, listIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private Notification getNotification(Context context, Intent intent) {
@@ -62,6 +90,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
+                .setGroup(GROUP_KEY)
                 .build();
     }
 
